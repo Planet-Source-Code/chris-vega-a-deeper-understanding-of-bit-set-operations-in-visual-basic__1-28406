@@ -1,0 +1,967 @@
+A deeper understanding of Bit-Set Operations in Visual Basic
+
+By: Chris Vega [gwapo@models.com]
+
+Introduction:
+========================================================================================
+
+This is a follow-up Article from "A Guide to Common Mistakes and Corrections in Visual 
+Basic (Part-1)" posted on the web, to answer emails i received requesting deeper 
+explanations about Visual Basic Bit-Set Operations in the part where i discussed in
+part about "The Use of Bit-Set Argument Instead of scaled Array of Boolean"
+
+you can read the article here:
+
+    http://trider.8m.com/files/Mistakes01.txt
+
+
+Authors Note:
+========================================================================================
+
+The part "Number System" was stripped from an article written by a good friend of mine 
+[Destro Ex], written as a quick tutorial for Win32 Assembly at [http://win32asm.8m.com]
+in which he desided NOT to continue, due to his work as a fashion model, anyway thats 
+another story...
+
+Again, with language perspective, I used Visual Basic as the Language refference while
+the general approach is focused on all of BASIC languages, ie, GWBASIC, Turbo BASIC,
+LINE BASIC, QUICK BASIC etch..
+
+
+The Number System 
+by Destro Ex [webmaster@win32asm.8m.com]
+=========================================================================================
+
+*** If you already know "Number System" please skip this part ***
+
+Did you remember math? when your teachers often says "we count using Decimal System"?
+offcourse computer process numbers far more different than we do, as you may know, 
+computers are made-up of switch, million, billion or trillion of swicthes, which makes 
+it understand only "OFF" and "ON" with the help of "Logical Operators" such as "AND, OR, 
+NOT etch.", that if we convert it as numerals, it only represents 0 and 1, this is 
+called Binary System or System based of 2 (1 and 0), where 0 represent OFF/FALSE and
+1 represent ON/TRUE.
+
+To make it short computers doesn't know numbers like 2, 3, 4, 5, etch. Before you object, 
+lets look how computers do arithmetics if it uses only two numbers, lets talk about bases.
+
+numbers we are using are compossed of 10 sets, 0 to 9, and if we exceeded, we just add 
+another digit and there we have 10,11,12 and so on... this is exactly the same computers 
+processing 0 and 1, if it exceed, it adds another digit that makes it 10,11 and so on.., 
+
+lets see a table showing this counting to visualize what I am talking:
+
+	Decimal		Binary 
+ 
+	   0		   0 
+	   1		   1 
+	   2		   10
+	   3		   11 
+	   4		   100 
+	   5		   101 
+	   6		   110 
+	   7		   111 
+	   8		   1000 
+	   9		   1001 
+	   10		   1010
+	   11		   1011
+	   12		   1100
+	   13		   1101
+	   14		   1110
+	   15		   1111
+
+Now, you actually see what I am trying to speak-out, but you may wondering why it is called
+bases. lets see more of the decimal value, for example 1234, once you seen this number, you
+reading it as "One thousand, Two Hundred, Thirty, Four", where Thirty means Three Tens, thus
+your mind set it like:
+
+ 1000
+  200
+   30                            3       2       1       0
++   4      which is based as 1*10  + 2*10  + 3*10  + 4*10  (power of 0, always equal to 1)
+
+
+By now its clear, but we need to look at Binary, say 1111, we read it as "One Eight, 
+One Four, One Two, One", cause the position of every digit gave it a digit name:
+
+      3           2           1           0
+ 1 * 2   +   1 * 2   +   1 * 2   +   1 * 2
+
+
+This time its not clear, because your mind is asking me where did I get "Eight, Four, 
+Two and One" while you can see only 0 and 1, to explain this, Ill ask you, where did you 
+get "Thousand, Hundred, Ten and One" from the example above? The answer is, by bases, 
+you are already using bases since childhood but you didn't noticed that you do, In Binary, 
+we add another digit when we exceed 1 (the highest amongst its system), we make 10, and 
+this exceed is done only by twos, and is called Twos Complement - Again in decimal, 
+Your first digit is Ones (10 to the 0th power, 1), next digit is Tens (10 to the 1st power,
+10 * 1), then next digit is Hundreds (10 to the 2nd power, 10*10) and so on.., 
+
+On Binary, Our powers was done by 2, So first digit is One (2 to the 0th power, equals 1) 
+Followed by next digit of Twos (2 to the 1st power, 2 * 1 = 2) and again followed by another 
+digit Fours (2 to the 2nd power, 2*2 = 4) And Fourth digit will is Eights (2 to the 3rd power, 
+2*2*2 = 8) and soon..,
+
+Ill give another example, suppose you have a decimal value 1024, how would you read it? 
+"One Thousand, Twenty, Four", where do "Zero Hundred" go? As a rule on numbers, Any digits 
+containing zero value must not be included when you read it, this is the same rule applied 
+when you try to convert Binary Number to Decimal Number; lets say we convert 10101101 to 
+Decimal, at first look, its kinda hard and feels stupid to calculate its digits base by base, 
+the quick and easy way is, eliminate zeros digits; How many digits do we have, 8 (by the way, 
+digits in Binary are called bit, so 8 Digit means 8-bit) and from this digits we count 
+1,2,4,8,16,32,64,128,256 (1 times 2 times 2 times 2 times 2 and so on..,), Ok to make your 
+calculation short, I present you a simple table of 16-bits:
+
+	2 on power of 0  =     1
+	2 on power of 1  =     2
+	2 on power of 2  =     4
+	2 on power of 3  =     8
+	2 on power of 4  =    16
+	2 on power of 5  =    32
+	2 on power of 6  =    64
+	2 on power of 7  =   128
+	2 on power of 8  =   256
+	2 on power of 9  =   512
+	2 on power of 10 =  1024
+	2 on power of 11 =  2048
+	2 on power of 12 =  4096
+	2 on power of 13 =  8192
+	2 on power of 14 = 16384
+	2 on power of 15 = 32768
+
+	(Just multiply by 2 if you need more, or go with old bases style)
+
+Now, this is where we eliminate zeros, align your Binary bits from right to left 
+downward and go with eliminating, and finally Add all non-eliminated candidates and 
+you should have you Decimal convertion done;
+
+Set our Bitset downward in reversed order, 10101101 to make it easy
+                                           ^      ^
+                                           |      |
+                                           |      +--- This is the First Bit
+                                           +---------- This is the Last Bit
+
+
+	1 =   1              -->   1
+	0 =   2 (eliminated) -->   0        
+	1 =   4              -->   4
+	1 =   8              -->   8
+	0 =  16 (eliminated) -->   0             
+	1 =  32              -->  32
+	0 =  64 (eliminated) -->   0
+	1 = 128              --> 128
+	                         ---       
+	                         173
+
+
+So the conversion tells 10101101 = 173, use a Scientific Calculator and see if our
+conversion was done correctly/
+
+We have extracted Decimal value on the fly and at the same time knows the way how computers 
+work with Binary, bit by bit. I know your not finished yet, you desires more, How about
+converting Decimal to Binary, ok, this part is not necessary (you can always rely with
+calculator) but will help you sometimes if you do it on paper, lets convert Decimal 1234
+for example to Binary. This matter only need is a talent on division, which is I know 
+you have =],
+
+	*** Note, Decimal to Binary conversion is not a must in Assembly/C programmers
+            cause the language converts numbers to binary automatically, while it maintain
+            decimal readability. While in Visual Basic, or any BASIC language, Decimal
+            to Binary conversion is a *must* if you like Bit-Set to use, ie, BASIC language
+            always rely in Decimal values.
+
+The thing you need to do is, check if Decimal value's last digit is Even (0,2,4,6 or 8), 
+if it is then you write 0, if it is Odd (1,3,5,7 and 9) then write 1, Now, divide the number
+by 2 and remove the decimal points., 1234 ÷ 2 = 617 (Integer Division), and repeat the 
+process until you only have 0 or 1 left., heres the progress reported by my little program:
+
+
+	1234 ÷ 2 = 167   (no decimal points to strip, 1234 is even = we write 0)
+	 617 ÷ 2 = 308.5 (strip .5 we have 308, 617 is odd = we write 1)        
+	 308 ÷ 2 = 154   (no decimal points to strip, 308 is even we write 0)   
+	 154 ÷ 2 =  77   (no decimal points to strip, 154 is even we write 0)   
+	  77 ÷ 2 =  38.5 (strip .5 we have 38, 77 is odd we write 1)            
+	  38 ÷ 2 =  19   (no decimal points to strip, 38 is even we write 0)    
+	  19 ÷ 2 =   9.5 (strip .5 we have 9, 19 is odd we write 1)             
+	   9 ÷ 2 =   4.5 (strip .5 we have 4, 9 is odd we write 1)              
+	   4 ÷ 2 =   2   (no decimal points to strip, 4 is even we write 0)     
+	   2 ÷ 2 =   1   (no decimal points to strip, 2 is even we write 0)     
+	(we finally have 1, no need to divide by 2, write it down as 1)
+
+You may be thinking why do we have to look if it is odd or even then write 1 or 0, do you 
+noticed what we are writting? its 1 and 0 right? then its binary, if we collect all we have 
+written so far, from down to up, we have the convertion done, so 1234 Decimal is converted 
+to 10011010010, easy right?
+
+Yes, another decimal, this time we dont have to count using two hand fingers only, but we 
+need even the foot fingers to count, cause Hexa means 16, hence we are talking to base 16 
+(another base), and this type of number system is the most important on Assembly Coding, 
+because this system has a direct interaction with Binary, which is the system used by the 
+computers.
+
+Why did I told that this system has direct interaction with Binary? simple, because when 
+we talk about Binary, we count its digits by bits and commonly bits are grouped by 8, 
+that makes it a byte (1 byte = 8 bits), and if we convert this 1 byte that has a value of 
+11111111, we get 256:
+
+	  1
+	  2
+	  4
+	  8
+	 16
+	 32
+	 64
+	128
+	---
+	256
+
+A 256 is not to read, specially in programs, from the pattern (8 bits), Hexadecimal was 
+formed by grouping this 8-bit into 2 4-bits each (called a Nibble), thus 11111111 will 
+become 1111 1111, and Hexadecimal is composed of 16 numbers 0 to 9 followed by A,B,C,D,E,F, 
+So if we count this nibble, we can form a table:
+
+	Decimal		Binary		Hexadecimal
+ 
+	   0		   0		    0
+	   1		   1 		    1
+	   2		   10		    2
+	   3		   11 		    3
+	   4		   100 		    4
+	   5		   101 		    5
+	   6		   110 		    6
+	   7		   111 		    7
+	   8		   1000		    8
+	   9		   1001		    9
+	   10		   1010		    A   <---- "A" will follow 9 and not 10
+	   11		   1011		    B
+	   12		   1100		    C
+	   13		   1101		    D
+	   14		   1110		    E
+	   15		   1111		    F
+	   16		   10000	    10 <---- 10 is after "F"
+ 
+
+Well, thats maybe long enough for number system, I think its time for some real coding,
+if you want to master this number thingies, then I recommend that you consult some
+books specially written for them =)
+
+
+The Bit-Set Operations In Visual Basic
+=========================================================================================
+
+Bit-Set or known as BitWise Operations is a bit-by-bit arithmetic/comparison of a single
+or multiple numeric expressions. 
+
+Now for the real things, Bit-Set, another breath of air in Visual Basic Programmings, coz,
+I am really amazed on how many people sent me email-feedback about the Article "A Guide
+to Common Mistakes and Corrections in Visual Basic (Part-1)" and requesting more informations
+about the "The Use of Bit-Set Argument Instead of scaled Array of Boolean", i cant name
+them all here in this article for privacy purpose, but instead of documenting only, and only
+Bit-Set Argumenting, i decided (cause of its complex structure) to make it a general layout
+than the actual request.
+
+In general approach, and since the conversion process had been discussed above, i will
+build a conversion procedure based on the rules applied on conversion to make you feel
+confortable in Visual Basic's Binary approach, and from this downward, i want you to
+forget Hexadecimal first, thats why i stripped it from the above write-ups.
+
+The Data Types
+==============
+
+	Lets looks at the Datas we need to make a conversions in Bit-Set, hmmm...
+
+		Dim dblDoubleValue As Double	' 64-bits
+		Dim lngLongValue As Long	' 32-bits
+		Dim intIntValue As Integer	' 16-bits
+		Dim bytByteValue As Byte	'  8-bits
+
+	No Binary DataType? neither Nibble? how about Bit? is this Visual Basic another
+	limitation? a lot of questions have been formed, but while looking at it, simply
+	one thing goes on my mind on doing a conversion, ie, an Array of Booleans where
+	TRUE = 1 and FALSE = 0, or better yet, we use String, An array of character, I
+	say we use String =)
+
+	And since 4 different datatypes are available in converssion, Double, Long, 
+	Integer and Byte, well be using Variant all in this Article, since theres no 
+	problem in performance once it get used in using Longs.
+
+
+Decimal to Binary Convertion
+============================
+
+	There are lots of approach in doing this, see the above method or do the division
+	by 2 (2s complement) manually and note the 1s and 0s.
+
+	Ill go with the rule applied above, the Odd/Even method, consider how it goes:
+
+	1] Clear output String strOutput (not-necessary, but for safe purpose only)
+
+		strOutput = ""
+
+	2] Assume Input is in the value numX, we want to convert it to Binary String
+	3] Check if this value is Odd or Even using the MOD Operator and put "1" if
+           this is Odd or "0" if this is Even
+
+	   The "put" will be added in StrOutput to the front (backward process)
+
+		strOutput = (numX Mod 2) & strOutput
+		'
+		' (numX Mod 2) will return 1 if numX is Odd or 0 if it is Even  
+		'
+
+	4] And do the actuall integer-division to numX (elliminate decimal points)
+
+		numX = Int(numX / 2)
+		'
+		' Note: If numX is 32-bits or below, you can replace the above 
+		' statement to
+		'
+		'   numX = numX \ 2
+		'
+
+	5] Repeat step 3 until numX is less-than 2
+	6] put the remaining numX to strOutput if it is equal to 1
+
+		if numX then strOutput = numX & strOutput
+
+	7] And the complete process:
+
+		strOutput = ""
+		While numX > 1
+			strOutput = (numX Mod 2) & strOutput
+			numX = Int(numX / 2)
+		Wend
+		if numX then strOutput = numX & strOutput
+
+
+	8] Easy, right? heres a slightly modified version of the above process
+	   to make the output as an Array of Boolean, TRUE = 1, FALSE = 0 and aryOutput is
+	   a Dynamic Array.
+
+		While numX > 0
+			Redim Preserve aryOutput(UBound(aryOutput) + 1) As Boolean
+			aryOutput(UBound(aryOutput)) = ((numX Mod 2) = 1)
+			numX = Int(numX / 2)
+		Wend
+
+
+Binary to Decimal Convertion
+============================
+
+	This is not an actuall reverse process of the above conversion, but a totally
+	different way, since we have to count in 2s complement, ie 1*2*2*2*2...etch and
+	sum all that falls in non-zero (eliminating-zeros) and there we got the conversion.
+
+	1] Assume Input as binString contains the stream of "1" and "0" characters, and
+	   we store the result to numX;
+
+		numX = 0
+
+	2] Since we have to run through multiplicant of 2, we are defining another variable
+	   as a Counter, lets call it cntBinary and set it equal to 1 (if you set it to 0,
+	   the multiplication process will remains 0!)
+
+		cntBinary = 1
+
+	3] What remains us to do now is run through the string of binary in reverse order;
+	   from right to left and see one by one if equal to "1", if so, add the value to
+	   the total sum
+
+		For i = Len(binString) To 2 Step - 1
+			If Val(Mid(binString, i, 1)) Then numX = numX + cntBinary
+		Next
+
+	   Why "Len(binString) To 2"? because we initiate cntBinary = 1 and we dont want
+	   that part be repeated by setting "Len(binString) To 1" And the "Step - 1" tells
+	   the For..Next loop to count backward, so our String Pointer will run from Right
+	   to Left.
+
+	4] Easier than Decimal to Binary Conversion!
+
+		numX = 0
+		cntBinary = 1
+		For i = Len(binString) To 2 Step - 1
+			If Val(Mid(binString, i, 1)) Then numX = numX + cntBinary
+		Next
+
+
+
+The Logical Operators
+=====================
+
+	This part was originally written as Arithmetic part, but i found it very time
+	consumming and boring, cause who likes Math? specially the very basic Additions
+	or Subtractions? and this wont amaze anyone saying
+
+		1 + 1 = 10
+
+	Offcourse, in Binary, so this part i reconstructed, only to give a few details on
+	the logical operators, lets re-call the two process above and reconstruct it as
+	functions int2bin and bin2int, and later ill give you the better-way of using
+	them in your conditions
+
+
+		Function int2bin(ByVal numArgument As Variant) As String
+		    int2bin = ""
+		    While numArgument > 1
+		        int2bin = (numArgument Mod 2) & int2bin
+		        numArgument = Int(numArgument / 2)
+		    Wend
+    
+		    int2bin = numArgument & int2bin
+		End Function
+
+		Function bin2int(ByVal binArgument As String) As Variant
+	            Dim binValue As Variant
+    
+		    binValue = 1
+		    bin2int = 0
+    
+		    For i = Len(binArgument) To 1 Step -1
+		        If Val(Mid(binArgument, i, 1)) Then _
+		            bin2int = bin2int + binValue
+		        binValue = binValue * 2
+		    Next
+		End Function
+
+
+		*** Note: I purposely modified the Functions in the included Application
+			  to make it support 128-bits of Data....The above example only
+			  limited to 32-Bits Datas.
+
+	So if we need the Binary Value of 233, we call
+
+		strBinOf233 = int2bin(233)	    ' 11101001
+
+	And back it Again to 233
+
+		lngLongOf233 = bin2int(strBinOf233) ' 233
+
+	For more functions, please see the included application with this Article.
+
+
+	1] NOT Operator
+
+		Performs logical negation on an expression.
+
+			Input		Output
+			======================
+			  0  		  1 
+			  1 		  0 
+
+
+		Msgbox Not 233
+
+		will display -234 cause its Signed! and to make it useful, i always
+		go in the Unsigned way in which
+
+		Msgbox Int(Not 233)
+
+		will definitely wont work! so we need to tailor another function to do 
+		this, a function to:
+
+		*] Convert the Input to Binary String
+		*] Checks every Bit of this String and replace it by its opposite
+		*] And returns the Result by Converting it back to Decimal
+		*] And i called it as not_() funtion
+
+			Function not_(ByVal numArgument As Variant) As Variant
+			    If longval(numArgument) > 0 Then
+			        Dim i As Long
+			        numArgument = int2bin(numArgument)
+        
+			        not_ = ""
+			        For i = 1 To Len(numArgument)
+			            If Asc(Mid(numArgument, i, 1)) - 48 _
+			               Then not_ = not_ & "0" _
+			               Else not_ = not_ & "1"
+			        Next
+			        not_ = bin2int(not_)
+			    End If
+			End Function
+
+		so the above call,
+
+			Msgbox Int(Not 233)
+
+		which is not working, can be replace by a working
+
+			Msgbox not_(233)
+
+		returns
+
+			22  or 00010110 as a negate of
+                        223 or 11101001
+
+	2] AND Operator
+
+		Performs a logical conjunction on two expressions.
+
+			Input1    And	Input2	   Output
+			=================================
+			  0  		  1           0
+			  1 		  0           0
+                          0               0           1
+                          1               1           1
+
+
+		it needs two values to And, meaning two Bits and performs logical
+		conjunctions, see table above, and the call
+
+		Msgbox 233 And 2
+
+		Displays 0, why? lets see 233 in Binary again, and conjunct it with
+		the Binary of 2
+
+			233	11101001
+			  2	00000010 	And
+				========
+			  0	00000000
+
+		makes sense, only if we look it in lower form (Binary), later i will
+		discuss a deeper approach in making your conditions using this and
+		other logical operators.
+
+	3] OR Operator
+
+		Performs a logical disjunction on two expressions.
+
+			Input1    And	Input2	   Output
+			=================================
+			  0  		  1           1
+			  1 		  0           1
+                          0               0           0
+                          1               1           1
+
+		If one is ON on both side, returns 1, otherwise returns 0, ie
+
+		Msgbox 233 Or 2
+
+		Displays 235, see it in deeper way:
+
+			233	11101001
+			  2	00000010 	Or
+				========
+			235	11101011
+
+	4] XOR Operator
+
+		Performs a logical exclusion on two expressions.
+
+			Input1    And	Input2	   Output
+			=================================
+			  0  		  1           1
+			  1 		  0           1
+                          0               0           0
+                          1               1           0
+
+		claims to be the opposite of AND Operator, but not actually does it,
+		since it has an abnormal behavior of returning numbers from its original
+		form if you repeatedly XOr a Value to fix Value, ie:
+
+			233 XOr 2 = 235
+
+			and
+
+			235 XOr 2 = 233
+
+		that is why the use of XOr Operator has been twisted as an Encryption
+		Operator, why not =)
+
+			233	11101001
+			  2	00000010 	XOr
+				========
+			235	11101011
+
+			235	11101011
+			  2	00000010 	XOr
+				========
+			233	11101001
+
+		Not bad eh!?
+
+
+
+An Approach to Better Conditioning System
+=========================================
+
+When i speak about Logical Operations, its the same as the one you use in conditions, 
+actually they are designed for conditions, but with its twisted abilities they are use 
+widely in different way than how it supposed to, And this conditions are called 
+Expressions:
+
+		If lngFirstDigit And lngTwoDigit Not 24 Then
+			DoEvents
+		End If
+
+		' Expression is   lngFirstDigit And lngTwoDigit Not 24
+
+	or
+
+		If Not (lngMyName And "Chris Vega") Then End
+
+		' Expression is   Not (lngMyName And "Chris Vega")
+
+only differs with a deeper look of what its BitSet means. And In Expression all value of 
+NON-ZERO is considered TRUE, otherwise FALSE,
+
+	ex.
+
+		If 0 Then
+			' This will not be Executed
+		End If
+
+		If 1 Then
+			' This will be Executed
+		End If
+
+		If 2001 Then
+			' And this one too
+		End If
+
+		If 233 Then
+			' Also this one
+		End If
+
+		If -224 Then
+			' Yup, even negative numbers gets
+			' TRUE, since it is non-zero!
+		End If
+
+Therefore, the system actually generates a numerical value based on your expression and
+not by what you-may beleive about it generates Boolean Value of either TRUE/FALSE values
+only, consider this:
+
+	If MyValueOf2 And 2 Then
+		' DoEvents
+	End If
+
+If the variable MyValueOf2 equals to 2, then the result is 2 (TRUE), otherwise always 
+returns to 0 (FALSE), and exactly behaves like:
+
+	If MyValueOf2 = 2 Then
+		' DoEvents
+	End If
+
+	' or
+
+	Dim boolMyCondition As Boolean
+
+	boolMyCondition = (MyValueOf2 = 2)
+
+	If boolMyCondition Then
+		' DoEvents
+	End If
+
+If you didn't get how it works with And, then try to go deeper from its Bit-Set,
+
+	Assuming MyValueOf2 = 4
+
+		4	00000100	<-- (MyValueOf2 = 4)
+		2	00000010 	And
+			========
+		0	00000000
+
+	Returns FALSE or 0 value, but if you assume MyValueOf2 = 2, then
+
+		2	00000010	<-- (MyValueOf2 = 2)
+		2	00000010 	And
+			========
+		2	00000010
+
+	Returns TRUE or 2 value, hmm, still getting dizzy?
+
+The difference about using Equal sign and the AND Operator is, Equal sign performs
+slower than AND Operator, why? because Equal sign are designed for equations, and
+used mostly in arithmetics, thus the system actually SAVES temporary values in stack, 
+while AND only focused on Logical Operation in which it was designed and directly use
+the refferenced stack (not creating new entry)
+
+	ex.
+	
+	If Not (lngMyName And "Chris Vega") Then End
+
+	' Is faster than
+
+	If Not (lngMyName = "Chris Vega") Then End
+
+while performs exactly the same, cause the first statement logically done while the
+second statements is not.
+
+*** 
+	This part and below is and exerpts from:
+
+	A Guide to Common Mistakes and Corrections in Visual Basic (Part-2)
+	(Descriptions and Presentation formats are Modified to fit this Article)
+
+***
+
+1] Using a single expression Conditions
+
+	As what i said above, and further, statements are logicaly made of value to
+	be tested, so if you test a Single Expression, and dont need another value to be 
+	tested then this was making your code faster, and it was called single 
+	expression conditions, see for it:
+
+	ex. 
+
+	*] Using a While-Wend Loop Until the Value of i=0, while dividing i by 2
+
+		Dim i As Long
+
+		i = 10000
+
+		While i
+			Debug.Print i
+			i = i \ 2
+		Wend
+
+	*] Endless loop until i = certain value, ie = 233
+
+		i = 1
+		lngCertainValue = 233
+    
+		Randomize
+
+		Do While (i And lngCertainValue)
+			Debug.Print i
+			i = (Rnd * 256) \ 1
+		Loop
+
+	*] An End-less loop using Immidiate Value, Heavily used inside Game Engines
+
+		Do While 1
+			' Initiate Games
+			' Play game
+
+			' If user dont wanna play again
+			' call Exit Do
+		Loop
+
+		' or
+
+		Do While True
+			' Initiate Games
+			' Play game
+
+			' If user dont wanna play again
+			' call Exit Do
+		Loop
+
+	*] Loop Until No Error, shows Error Message
+
+		Dim ErrorNumber As Long
+
+		ErrorNumber = 0		' No Error
+
+		While Not ErrorNumber
+			'
+			' Set to higher value, like
+			'
+			' 1  = Printer Out of Reach (Offline)
+			' 2  = Network Connection Failed
+			' 4  = User Already Connected
+			' 8  = Failed creating Pipe
+			' 16 = Wrong version of DLL found
+			' 32 = System Failure, General Protection Fault
+			' 64 = Server Application has Booted You
+			'
+			Randomize
+			ErrorNumber = ((Rnd * 7) \ 1) ^ 2
+
+			ShowErrorMessage ErrorNumber
+		Wend
+
+	   Where ShowErrorMessage is a Function to Evalute ErrorNumber to its Message
+
+2] Make it Double, do it Multiple
+
+	I guess its not that hard to play with conditions using Single Expression conditions, 
+	explore the more complex parts, see a multiple way of obscured expressions, and see
+	how does it build multiple while it is really a Twisted Single Expression conditions
+
+	ex.
+
+	*] Do-Until Loop, with 2 Single Expression Conditions, 1 is when i > 0 and j < 1000
+
+		Dim i As Long, j As Long
+
+		i = 1000
+		j = 0
+
+		' Since we ANDed the values together, it is considered Single Expression
+		' Condition, but the j - 1000 produces results to be ANDed to i, therefore
+		' multiple
+
+		Do While i And (j - 1000)
+			Debug.Print i & "," & j
+			i = i - 1
+			j = j + 1
+		Loop
+
+	*] Endless loop until i = certain value, ie = 233, modified with Not Operator
+
+		i = 1
+		lngCertainValue = 233
+    
+		Randomize
+
+		Do While Not i And lngCertainValue
+			Debug.Print i
+			i = (Rnd * 256) \ 1
+		Loop
+
+	   How did it considered as multiple? its because the condition's formation itself,
+	   AND always perform first, so what happen the same as:
+
+		+- i And lngCertainValue
+		+- Not ResultOfAbove
+
+	   Two Items in list (Two tasks) before the condition is called, therefore basics
+	   as in multiple conditioning idea has been presented.
+
+
+	*] An End-less loop using Immidiate Value, Heavily used inside Game Engines, with
+	   added features of User can break inside Game loop while playing, or extends with
+	   error checking....
+
+		IsGameOnPlay = 1
+
+		Do While IsGameOnPlay
+			' Initiate Games
+			While IsGameOnPlay And Not (IsGameCancelled Or IsGameError)
+				' Play game
+			Wend
+
+			' If user dont wanna play again
+			' call IsGameOnPlay = False
+		Loop
+
+	   Where IsGameCancelled and IsGameError are functions that returns either values
+	   of 0 (FALSE = No Error) or Non-Zero (ErrorNumber or CancelMethod)
+
+	   The Internal While-Wend loop has the multiple conditions
+
+		IsGameOnPlay And Not (IsGameCancelled Or IsGameError)
+
+	   Evaluated as
+
+		+- Not IsGameCancelled = CancelMethod?
+		+- Not IsGameError = ErrorNumber?
+		+- If the 2 Condition Above is True and Still game on play, IsGameOnPlay?
+
+	   Multiple again!
+
+	*] A complex Directory Searching, how would you do it in Non-Complex way?
+
+		dirX = Dir(CurrentPath & "*.*")
+
+		While Len(dirX) And Not (OnRootPath Or SubDirectoryEntered)
+			Debug.Print dirX
+
+			If IsDirectory(dirX) Then EnterDirectory(dirX)
+
+			dirX = Dir
+		Wend
+
+	   The IsDirectory function returns 0 = Not-A Directory or
+
+		1 = Protected Directory
+		2 = Normal Directory
+		4 = System Directory
+		8 = Root Directory
+
+	   And OnRootDirectory only test the Result of IsDirectory = 8, While
+	   EnterDirectory Maps the previously searched items and saves the temporarily, so
+	   the search continues with that directory (getting deeper)
+
+	   And this article is not designed to make Directory-Traversal Application, so
+	   the Statements of Multiple-Expressions.
+
+3] Dynamic Expression
+
+	If you think it ends with Multiple Expression, then you might be wrong, there is
+	is Expression made on Run-time, while the Loops or Statements remains the same...
+
+	ex.
+
+	*] Different Expressions in one, example, Your expression is being built 
+	   dynamically at run-time and your user decided on-it not you, do you think
+	   its possible to tailor the expression on simple way, let see
+
+		' Supposed your user wanted your loops to end only if the the variable
+		' meets this following statements
+
+		' var / 2 = 1234
+		' (var ^ 2) + var = 1234
+		' and must not be var * var = 1234
+
+		' therefore
+
+		Dim MyVar As Long
+		Dim Statement0 As Boolean
+		Dim Statement1 As Boolean
+		Dim Statement2 As Boolean
+
+		MyVar = GetUserInput	' Get the User's Input
+
+		Statement0 = MyVar / 2 = 1234
+		Statement1 = (MyVar ^ 2) + MyVar = 1234
+		Statement2 = MyVar * MyVar = 1234
+
+		Do While 1
+			If (Statement0 Or _
+	                    Statement1) And _
+	                    Not Statement2 Then
+				Msgbox "Condition has been met succesfully!", _
+                                       vbInformation
+				DoEvents
+				Exit Do
+			End If
+		Loop
+
+	*] Another is on most of the Pay-roll Systems, how would you rate personels, while
+	   they are on different possitions with different ratings, all is ok if you use
+	   tables to save their ratings, with only one problem, if the user has the 
+	   decission on the rating behaviors, and not the systems, ie, your user can choose
+	   if he/she want to use table in rating or use a rating he/she entered manually.
+
+		' Rating Tables
+
+		Dim rsTables As Recordset
+
+		' Open Table
+
+		If UserInteraction Then
+			Dim UserRate As Long
+			Dim UserMin As Long
+			Dim UserMax As Long
+			Dim UserType As Boolean
+			Dim UserRange As Boolean
+
+			' Conditions will only met if the UserRate is in the range
+			' of [UserMin..UserMax] and the Personel that about to be
+			' rated is not an Administrator...
+
+			UserType = (User = "admin")
+			UserRange = (UserRate >= UserMin) And (UserRate <= UserMax)
+			If UserType And UserRange Then
+				' Do ratings here
+			End If
+		Else
+			' System Interaction
+
+			' Do the data Table Ways here
+		End If
+
+		
+Conclusion
+==========
+
+Oops its 3AM, need to sleep, see next, cheerz for more coding and articles, only if
+i stay on VB coding..................................................................
+.....................................................................................
+.....................................................................................
+.....................................................................................
+.....................................................................................
+........................................................Chris Vega [gwapo@models.com]
